@@ -7,6 +7,7 @@ def get_todos(filepath=FILEPATH):
     """
     with open(filepath, "r") as file_local:
         todos_local = file_local.readlines()
+        todos_local = sorted(todos_local)
     return todos_local
 
 

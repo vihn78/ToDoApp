@@ -1,6 +1,11 @@
 import functions
 import FreeSimpleGUI as sg
 import time
+import os
+
+if not os.path.exists("todos.txt"):
+    with open("todos.txt", "w") as file:
+        pass
 
 
 clock = sg.Text(key="clock")
@@ -24,15 +29,24 @@ window = sg.Window("My To-Do App",
 
 while True:
     event, values = window.read(timeout=100)
+
+    # chiusura immediata: X o bottone Exit
+    if event in (sg.WINDOW_CLOSED, getattr(sg, "WIN_CLOSED", sg.WINDOW_CLOSED), None, "Exit"):
+        break
+
     window["clock"].update(value=time.strftime("%d, %b, %Y %H:%M:%S"))
     
     match event:
         case "Add":
-            todos = functions.get_todos()
-            new_todo = values["todo"] + "\n"
-            todos.append(new_todo)
-            functions.write_todos(todos)
-            window["todos"].update(values=todos)
+            if values["todo"] != "":
+                todos = functions.get_todos()
+                new_todo = values["todo"] + "\n"
+                todos.append(new_todo)
+                todos = sorted(todos)
+                functions.write_todos(todos)
+                window["todos"].update(values=todos)
+            else:
+                sg.popup("Please enter a todo first.", font=("helvetica", 20))
 
         case "Edit":
             try:
